@@ -2,3 +2,5 @@
 
 This is a template application for Vert.x REST application instrumented to
 expose Prometheus metrics.
+
+And some edits!
