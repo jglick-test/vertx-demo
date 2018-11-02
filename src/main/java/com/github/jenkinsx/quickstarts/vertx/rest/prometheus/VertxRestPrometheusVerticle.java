@@ -26,6 +26,7 @@ public class VertxRestPrometheusVerticle extends AbstractVerticle {
 
         exposeHelloWorldEndpoint(router);
         exposeMetricsEndpoint(router);
+        exposeHealthEndpoint(router);
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
         super.start(startFuture);
@@ -36,13 +37,21 @@ public class VertxRestPrometheusVerticle extends AbstractVerticle {
             helloCounter.inc();
             HttpServerResponse response = routingContext.response();
             response.putHeader("content-type", "application/json");
-            response.end(new JsonObject().put("Hello", "world").toBuffer());
+            response.end(new JsonObject().put("Hello", "World!").toBuffer());
         });
     }
 
     private void exposeMetricsEndpoint(Router router) {
         DefaultExports.initialize();
         router.route("/metrics").handler(new MetricsHandler(registry));
+    }
+
+    private void exposeHealthEndpoint(Router router) {
+        router.route("/actuator/health").handler(routingContext -> {
+            HttpServerResponse response = routingContext.response();
+            response.putHeader("content-type", "text/plain");
+            response.end("OK");
+        });
     }
 
     // IDE testing helper
